@@ -13,11 +13,19 @@ public class Controller : RaycastController {
 
 	// Use this for initialization
 	public override void Start () {
+		if (!isLocalPlayer) {
+			return;
+		}
+
 		base.Start ();
 		collisions.facingRight = 1;
 	}
 
 	public void Move (Vector3 velocity, Vector2 input, bool jump, bool standingOnPlatform = false) {
+		if (!isLocalPlayer) {
+			return;
+		}
+
 		UpdateRayCastOrigens ();
 		collisions.Reset ();
 

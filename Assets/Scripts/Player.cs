@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-[RequireComponent (typeof (Controller))]
-public class Player : MonoBehaviour {
+public class Player : NetworkBehaviour {
 
-	Controller controller;
+	public Controller controller;
 
 	public float maxJumpHeight = 4;
 	public float minJumpHeight = 1;
@@ -36,7 +36,9 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		controller = GetComponent<Controller> ();
+		if (!isLocalPlayer) {
+			return;
+		}
 
 		spriteFacingRight = true;
 
@@ -47,6 +49,10 @@ public class Player : MonoBehaviour {
 	}
 
 	void Update () {
+		if (!isLocalPlayer) {
+			return;
+		}
+
 		input = new Vector2 (Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
 		int wallDirX = (controller.collisions.left)?-1:1;
@@ -87,7 +93,7 @@ public class Player : MonoBehaviour {
 
 		// Player jumps. If player is against wall, wall jump based on player input
 		jump = false;
-		if (Input.GetKeyDown (KeyCode.UpArrow)) {
+		if (Input.GetKeyDown (KeyCode.UpArrow) || Input.GetKeyDown (KeyCode.W)) {
 			if (controller.collisions.below) {
 				jump = true;
 				velocity.y = maxJumpVelocity;
@@ -107,7 +113,7 @@ public class Player : MonoBehaviour {
 		}
 
 		// Player jump height varies based on how long they hold the jump button
-		if (Input.GetKeyUp (KeyCode.UpArrow)) {
+		if (Input.GetKeyUp (KeyCode.UpArrow) || Input.GetKeyUp (KeyCode.W)) {
 			if (velocity.y > minJumpVelocity)
 				velocity.y = minJumpVelocity;
 		}
@@ -119,8 +125,8 @@ public class Player : MonoBehaviour {
 	//Controls the orientation of the sprite
 	void Flip() {
 		spriteFacingRight = !spriteFacingRight;
-		Vector3 theScale = transform.localScale;
+		Vector3 theScale = transform.GetChild(0).localScale;
 		theScale.x *= -1;
-		transform.localScale = theScale;
+		transform.GetChild(0).localScale = theScale;
 	}
 }

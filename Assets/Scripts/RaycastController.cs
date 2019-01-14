@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-[RequireComponent (typeof (BoxCollider2D))]
-public class RaycastController : MonoBehaviour {
+public class RaycastController : NetworkBehaviour {
 
 	public LayerMask collisionMask;
 
@@ -15,13 +15,16 @@ public class RaycastController : MonoBehaviour {
 	[HideInInspector]
 	public float verticalRaySpacing;
 
-	[HideInInspector]
 	public BoxCollider2D collider;
 	public RaycastOrigins raycastOrigens;
 
 	// Needs to be awake because it is called before start, eliminates errors with Camera Controller
 	public virtual void Awake() {
-		collider = GetComponent<BoxCollider2D> ();
+		if (!transform.CompareTag("Player"))
+			collider = GetComponent<BoxCollider2D> ();
+
+		if (collider == null)
+			Debug.Log ("BoxCollider2D missing");
 	}
 
 	public virtual void Start () {

@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class ProjectileController : MonoBehaviour {
+public class ProjectileController : NetworkBehaviour {
 
 	public LayerMask obstacles;
 	public LayerMask player;
@@ -18,28 +19,56 @@ public class ProjectileController : MonoBehaviour {
 	public float maxProjectileSpeed;
 	public float timeAlive;
 
-	void Start () {
-		rb2d = GetComponent<Rigidbody2D> ();
+//	public Vector2 shootDir;
+//	public float projectileSpeed;
+//
+//	public override void OnStartServer() {
+//		if (!base.isServer)
+//			return;
+//
+//		rb2d = GetComponent<Rigidbody2D> ();
+//		rb2d.AddForce (direction.normalized * projectileSpeed, ForceMode2D.Impulse); 
+//	}
 
-		chargeTime = Mathf.Clamp01 (chargeTime);
-		float projectileSpeed = Mathf.Lerp (minProjectileSpeed, maxProjectileSpeed, chargeTime);
+//	private void Start () {
+//		if (!base.isServer) {
+//			return;
+//		}
+//
+//		rb2d = GetComponent<Rigidbody2D> ();
+//
+//		chargeTime = Mathf.Clamp01 (chargeTime);
+//		float projectileSpeed = Mathf.Lerp (minProjectileSpeed, maxProjectileSpeed, chargeTime);
+//
+//		mousePosition = Input.mousePosition;
+//		mousePosition = Camera.main.ScreenToWorldPoint (mousePosition);
+//		direction = new Vector2 (mousePosition.x - transform.position.x, mousePosition.y - transform.position.y);
+//
+//		//Debug.DrawLine (transform.position, mousePosition);
+//
+//		Debug.DrawRay (transform.position, direction.normalized * projectileSpeed);
+//
+//		print ("ProjectileController");
+//
+//		rb2d.AddForce (direction.normalized * projectileSpeed, ForceMode2D.Impulse); 
+//		//CmdShootProjectile(projectileSpeed);
+//	}
 
-		mousePosition = Input.mousePosition;
-		mousePosition = Camera.main.ScreenToWorldPoint (mousePosition);
-		direction = new Vector2 (mousePosition.x - transform.position.x, mousePosition.y - transform.position.y);
-
-		rb2d.AddForce (direction.normalized * projectileSpeed, ForceMode2D.Impulse);
-
-		Destroy (gameObject, timeAlive);
-	}
+//	[Command]
+//	void CmdShootProjectile (float projectileSpeed) {
+//		rb2d.AddForce (direction.normalized * projectileSpeed, ForceMode2D.Impulse);
+//	}
 
 	void OnTriggerEnter2D(Collider2D other) {
+		if (!base.isServer)
+			return;
+
 		if (obstacles == (obstacles | (1 << other.gameObject.layer))) {
-			Destroy (gameObject);
+			NetworkServer.Destroy (gameObject);
 		}
 
 		if (other.CompareTag("Player")) {
-			Destroy (gameObject);
+			NetworkServer.Destroy (gameObject);
 		}
 	}
 }

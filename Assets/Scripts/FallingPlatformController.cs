@@ -69,8 +69,6 @@ public class FallingPlatformController : RaycastController {
 		HashSet<Transform> movedPassengers = new HashSet<Transform> ();
 		passengerMovement = new List<PassengerMovement> ();
 
-		float directionY = Mathf.Sign (velocity.y);
-
 		// Passenger on top of downward moving platform
 		if (velocity.y != 0) {
 			float rayLength = skinWidth * 2;
